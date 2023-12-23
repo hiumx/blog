@@ -14,6 +14,12 @@ app.use(morgan('combined'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(express.urlencoded({
+     extended: true
+}))
+
+app.use(express.json())
+
 app.engine('.hbs', engine({extname: '.hbs'}));
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, '/resource/views'));
@@ -29,6 +35,7 @@ app.get('/search', (req, res) => {
 
 app.post('/search', (req, res) => {
      console.log(req.query);
+     console.log(req.body);
      res.render('search')
 });
 app.listen(port, () => {

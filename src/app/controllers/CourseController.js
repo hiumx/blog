@@ -7,21 +7,23 @@ class CourseController {
         res.render('courses/create');
     }
 
-    async createACourse(req, res) {
+    async store(req, res, next) {
         try {
             await CourseModel.create(req.body);
             res.redirect('/');
         } catch (error) {
-            next(error);
         }
     }
+
+    // update(req, res) {
+
+    // }
 
     async show(req, res, next) {
         try {
             const course = await CourseModel.findOne({ slug: req.params.slug });
             res.render('courses/show', { course: mongooseToObject(course) });
         } catch (error) {
-            next(error);
         }
     }
 }

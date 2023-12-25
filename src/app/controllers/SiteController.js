@@ -9,7 +9,6 @@ class SiteController {
                 courses: multipleMongooseToObject(courses)
             });
         } catch (error) {
-            next(error);
         }
     }
 

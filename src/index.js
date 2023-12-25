@@ -23,10 +23,11 @@ app.use(morgan('combined'));
 //Config static assets file
 app.use(express.static(path.join(__dirname, 'public')));
 
-//Middleware parse coming request with urlencoded
+//Middleware parse coming request with urlencoded 
 app.use(express.urlencoded({
      extended: true
 }))
+//Middleware parse coming request with json 
 app.use(express.json())
 
 //Template engine

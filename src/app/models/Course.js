@@ -4,7 +4,9 @@ const Schema = mongoose.Schema;
 const Course = new Schema({
   id: { type: String },
   name: { type: String },
+  description: { type: String },
   image: { type: String },
+  slug: {type: String},
   createdAt: { type: Date, default: Date.now},
   updatedAt: { type: Date, default: Date.now}
 });

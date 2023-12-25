@@ -1,5 +1,5 @@
 import CourseModel from '../models/Course.js';
-import { mongooseToObject } from '../../util/mongoose.js'
+import { mongooseToObject, multipleMongooseToObject } from '../../util/mongoose.js'
 
 class CourseController {
 
@@ -15,9 +15,24 @@ class CourseController {
         }
     }
 
-    // update(req, res) {
+    async management(req, res) {
+        const courses = await CourseModel.find({});
+        res.render('courses/management', {
+            courses: multipleMongooseToObject(courses)
+        });
+    }
 
-    // }
+    async edit(req, res) {
+        const course = await CourseModel.findOne({_id: req.params.id})
+        res.render('courses/edit', {
+            course: mongooseToObject(course)
+        })
+    }
+
+    async update(req, res) {
+        await CourseModel.updateOne({_id: req.params.id}, req.body);
+        res.redirect('/courses/management');
+    }
 
     async show(req, res, next) {
         try {

@@ -16,22 +16,43 @@ class CourseController {
     }
 
     async management(req, res) {
-        const courses = await CourseModel.find({});
-        res.render('courses/management', {
-            courses: multipleMongooseToObject(courses)
-        });
+        try {
+            const courses = await CourseModel.find({});
+            res.render('courses/management', {
+                courses: multipleMongooseToObject(courses)
+            });
+        } catch (error) {
+            
+        }
     }
 
     async edit(req, res) {
-        const course = await CourseModel.findOne({_id: req.params.id})
-        res.render('courses/edit', {
-            course: mongooseToObject(course)
-        })
+        try {
+            const course = await CourseModel.findOne({ _id: req.params.id })
+            res.render('courses/edit', {
+                course: mongooseToObject(course)
+            })
+        } catch (error) {
+
+        }
     }
 
     async update(req, res) {
-        await CourseModel.updateOne({_id: req.params.id}, req.body);
-        res.redirect('/courses/management');
+        try {
+            await CourseModel.updateOne({ _id: req.params.id }, req.body);
+            res.redirect('/courses/management');
+        } catch (error) {
+
+        }
+    }
+
+    async delete(req, res) {
+        try {
+            await CourseModel.deleteOne({ _id: req.params.id });
+            res.redirect('back');
+        } catch (error) {
+
+        }
     }
 
     async show(req, res, next) {

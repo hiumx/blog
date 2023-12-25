@@ -11,6 +11,8 @@ route.get('/management', courseController.management);
 route.get('/edit/:id', courseController.edit);
 route.put('/:id', courseController.update);
 
+route.delete('/:id', courseController.delete);
+
 route.get('/:slug', courseController.show);
 
 export default route;

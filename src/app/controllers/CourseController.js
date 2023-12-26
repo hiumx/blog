@@ -28,7 +28,7 @@ class CourseController {
     }
 
     async edit(req, res) {
-        d
+        
         try {
             const course = await CourseModel.findOne({ _id: req.params.id })
             res.render('courses/edit', {

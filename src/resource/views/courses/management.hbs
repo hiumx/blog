@@ -1,10 +1,25 @@
-<div class="mt-4">
+<form class="mt-4" method="POST" action="/courses/handle-form-action">
     <div class="container">
         <h2>List Courses</h2>
         <a href="/courses/trash-courses" class="mb-4 d-block">Trash basket ({{numberCourseDeleted}})</a>
+
+        <div class="mt-4 mb-4 d-flex align-items-center">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="check-all-courses">
+                <label class="form-check-label" for="check-all-courses">Select all</label>
+            </div>
+            <div class="form-group select-actions-submit-course">
+                <select class="form-control" name="action" required>
+                    <option value="">-- Select action --</option>
+                    <option value="delete">Delete</option>
+                </select>
+            </div>
+            <button type="submit" id="submit-action-btn" class="btn btn-primary disabled">Apply</button>
+        </div>
         <table class="table">
             <thead>
                 <tr>
+                    <th scope="col"></th>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
                     <th scope="col">Description</th>
@@ -14,6 +29,11 @@
             <tbody>
                 {{#each courses}}
                 <tr>
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="courseIds[]" value="{{this._id}}">
+                        </div>
+                    </td>
                     <th scope="row">{{sum @index 1}}</th>
                     <td>{{this.name}}</td>
                     <td>{{this.description}}</td>
@@ -34,7 +54,7 @@
             </tbody>
         </table>
     </div>
-</div>
+</form>
 
 {{!-- model when click delete button --}}
 <div class="modal fade" id="delete-course" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -67,6 +87,9 @@
 
         const formDeleteCourse = document.forms['delete-course-form'];
         const deleteCourseBtn = document.querySelector('#delete-course-btn');
+        const selectAllItems = document.getElementById('check-all-courses');
+        const checkCourseItems = document.querySelectorAll('input[name="courseIds[]"]');
+        const submitActionBtn = document.querySelector('#submit-action-btn');
 
         let courseId;
 
@@ -76,13 +99,35 @@
         })
 
         deleteCourseBtn.onclick = function () {
-            
-            //chỗ này hơi khó hiểu
-            //'courses/' + courseId + '?_method=DELETE' ???
-            //console.log('courses/' + courseId + '?_method=DELETE')
-            formDeleteCourse.setAttribute('action', courseId + '?_method=DELETE');
+
+            formDeleteCourse.setAttribute('action', '/courses/' + courseId + '?_method=DELETE');
             formDeleteCourse.submit();
         }
+
+        selectAllItems.onchange = function () {
+            const isCheckAll = selectAllItems.checked;
+            checkCourseItems.forEach(checkCourseItem => checkCourseItem.checked = isCheckAll);
+        }
+
+        checkCourseItems.forEach(checkCourseItem =>
+            this.onchange = function () {
+                const checkCourseItemsChecked = document.querySelectorAll('input[name="courseIds[]"]:checked');
+                selectAllItems.checked = checkCourseItems.length === checkCourseItemsChecked.length;
+                if(checkCourseItemsChecked.length > 0) {
+                    submitActionBtn.classList.remove('disabled');
+                } else {
+                    submitActionBtn.classList.add('disabled');
+                }
+            }
+        )
+
+        submitActionBtn.onclick = function(e) {
+            if(this.classList.contains('disabled')) {
+                e.preventDefault();
+            }
+        }
+
+
     })
 
 

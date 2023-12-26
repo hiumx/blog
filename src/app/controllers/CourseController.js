@@ -67,15 +67,23 @@ class CourseController {
     }
 
     async showTrashCourse(req, res) {
-        const courses = await CourseModel.findDeleted({});
-        res.render('courses/trash-courses', {
-            courses: multipleMongooseToObject(courses)
-        });
+        try {
+            const courses = await CourseModel.findDeleted({});
+            res.render('courses/trash-courses', {
+                courses: multipleMongooseToObject(courses)
+            });
+        } catch (error) {
+            
+        }
     }
 
     async restore(req, res) {
-        await CourseModel.restore({ _id: req.params.id });
-        res.redirect('back');
+        try {
+            await CourseModel.restore({ _id: req.params.id });
+            res.redirect('back');
+        } catch (error) {
+            
+        }
     }
 
     async show(req, res, next) {
@@ -83,6 +91,15 @@ class CourseController {
             const course = await CourseModel.findOne({ slug: req.params.slug });
             res.render('courses/show', { course: mongooseToObject(course) });
         } catch (error) {
+        }
+    }
+
+    async handleFormAction(req, res) {
+        try {
+            await CourseModel.delete({ _id: { $in : req.body.courseIds }});
+            res.redirect('back');
+        } catch (error) {
+            
         }
     }
 }

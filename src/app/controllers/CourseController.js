@@ -16,18 +16,19 @@ class CourseController {
         }
     }
 
-    async management(req, res) {
-        try {
-            const courses = await CourseModel.find({});
-            res.render('courses/management', {
-                courses: multipleMongooseToObject(courses)
-            });
-        } catch (error) {
-            
-        }
+    management(req, res, next) {
+        Promise.all([CourseModel.find({}), CourseModel.countDocumentsWithDeleted({ deleted: true })])
+            .then(([courses, numberCourseDeleted]) =>
+                res.render('courses/management', {
+                    courses: multipleMongooseToObject(courses),
+                    numberCourseDeleted
+                }
+                ))
+            .catch(next);
     }
 
     async edit(req, res) {
+        d
         try {
             const course = await CourseModel.findOne({ _id: req.params.id })
             res.render('courses/edit', {
@@ -58,10 +59,10 @@ class CourseController {
 
     async forceDelete(req, res) {
         try {
-            await CourseModel.deleteOne({_id: req.params.id});
+            await CourseModel.deleteOne({ _id: req.params.id });
             res.redirect('back');
         } catch (error) {
-            
+
         }
     }
 
@@ -73,7 +74,7 @@ class CourseController {
     }
 
     async restore(req, res) {
-        await CourseModel.restore({_id: req.params.id});
+        await CourseModel.restore({ _id: req.params.id });
         res.redirect('back');
     }
 

@@ -9,7 +9,8 @@ class CourseController {
 
     async store(req, res, next) {
         try {
-            await CourseModel.create(req.body);
+            const course = new CourseModel(req.body);
+            await course.save();
             res.redirect('/');
         } catch (error) {
         }
@@ -48,11 +49,32 @@ class CourseController {
 
     async delete(req, res) {
         try {
-            await CourseModel.deleteOne({ _id: req.params.id });
+            await CourseModel.delete({ _id: req.params.id });
             res.redirect('back');
         } catch (error) {
 
         }
+    }
+
+    async forceDelete(req, res) {
+        try {
+            await CourseModel.deleteOne({_id: req.params.id});
+            res.redirect('back');
+        } catch (error) {
+            
+        }
+    }
+
+    async showTrashCourse(req, res) {
+        const courses = await CourseModel.findDeleted({});
+        res.render('courses/trash-courses', {
+            courses: multipleMongooseToObject(courses)
+        });
+    }
+
+    async restore(req, res) {
+        await CourseModel.restore({_id: req.params.id});
+        res.redirect('back');
     }
 
     async show(req, res, next) {

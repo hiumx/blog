@@ -1,7 +1,7 @@
 <div class="mt-4">
     <div class="container">
-        <h2>List Courses</h2>
-        <a href="/courses/trash-courses" class="mb-4 d-block">Trash basket</a>
+        <h2>Courses Trashed</h2>
+        <a href="/courses/management" class="mb-4 d-block">List courses</a>
         <table class="table">
             <thead>
                 <tr>
@@ -13,22 +13,24 @@
             </thead>
             <tbody>
                 {{#each courses}}
+                {{#if deleted}}
                 <tr>
                     <th scope="row">{{sum @index 1}}</th>
                     <td>{{this.name}}</td>
                     <td>{{this.description}}</td>
                     <td>{{this.image}}</td>
-                    <td><a href="/courses/edit/{{this._id}}" class="btn btn-primary btn-md active" role="button"
-                            aria-pressed="true">Update</a>
+                    <td><a href="" class="btn btn-primary btn-md active restore-course-btn" role="button"
+                            aria-pressed="true" data-id="{{this._id}}">Restore</a>
                     </td>
                     <td><a href="/course/{{this._id}}" class="btn btn-secondary btn-md active" role="button"
                             aria-pressed="true" data-toggle="modal" data-target="#delete-course"
-                            data-id="{{this._id}}">Delete</a>
+                            data-id="{{this._id}}">Permanently delete</a>
                     </td>
                 </tr>
+                {{/if}}
                 {{else}}
                 <tr>
-                    <td colspan="5" class="text-center">You haven't posted any courses yet.</td>
+                    <td colspan="5">Trash can empty.</td>
                 </tr>
                 {{/each}}
             </tbody>
@@ -42,13 +44,13 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Delete course ?</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Delete course permanently ?</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                Are you sure delete this course ?
+                Are you sure delete permanently this course ?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -60,29 +62,42 @@
 
 {{!-- form hidden to support delete course --}}
 <form name="delete-course-form" method="POST"></form>
+<form name="restore-course-form" method="POST"></form>
 
 <script>
 
     document.addEventListener('DOMContentLoaded', function () {
 
         const formDeleteCourse = document.forms['delete-course-form'];
+        const formRestoreCourse = document.forms['restore-course-form'];
         const deleteCourseBtn = document.querySelector('#delete-course-btn');
+        const restoreCoursesBtn = document.querySelectorAll('.restore-course-btn');
 
         let courseId;
-
         $('#delete-course').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
             courseId = button.data('id');
         })
 
         deleteCourseBtn.onclick = function () {
-            
+
             //chỗ này hơi khó hiểu
             //'courses/' + courseId + '?_method=DELETE' ???
             //console.log('courses/' + courseId + '?_method=DELETE')
-            formDeleteCourse.setAttribute('action', courseId + '?_method=DELETE');
+            formDeleteCourse.setAttribute('action', courseId + '/force?_method=DELETE');
             formDeleteCourse.submit();
         }
+
+        restoreCoursesBtn.forEach(courseBtn => {
+            courseBtn.onclick = function (e) {
+                e.preventDefault();
+                let courseDeleteId = this.getAttribute('data-id');
+                formRestoreCourse.action = courseDeleteId + '/restore?_method=PATCH';
+                formRestoreCourse.submit();
+            }
+        })
+
+
     })
 
 
